@@ -6,6 +6,7 @@ Projects:
 
 - `@mono/contracts` (`libs/contracts`) — shared API types. None yet.
 - `@mono/design-system` (`libs/design-system`) — tokens, `ds-button`, `ds-input`, and `ds-select`. Import `@mono/design-system/tokens.css` once per app.
+- `@mono/angular-ds` (`libs/angular-ds`) — Angular directives so those elements work in a reactive form. Import `DsInputControl`, `DsSelectControl`, and `DsButtonControl`.
 
 ```sh
 pnpm install
