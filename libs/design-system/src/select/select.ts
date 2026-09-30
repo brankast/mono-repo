@@ -1,5 +1,6 @@
 import { LitElement, css, html, nothing } from 'lit';
 import { live } from 'lit/directives/live.js';
+import { fieldValidity } from '../validation.js';
 
 export type SelectOption = {
   value: string;
@@ -81,6 +82,8 @@ export class DsSelect extends LitElement {
   #internals: ElementInternals;
   #selectId: string;
   #errorId: string;
+  #touched = false;
+  #revealed = false;
 
   constructor() {
     super();
@@ -98,8 +101,20 @@ export class DsSelect extends LitElement {
     this.disabled = false;
   }
 
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener('invalid', this.#onInvalid);
+  }
+
+  override disconnectedCallback(): void {
+    this.removeEventListener('invalid', this.#onInvalid);
+    super.disconnectedCallback();
+  }
+
   formResetCallback(): void {
     this.value = '';
+    this.#touched = false;
+    this.#revealed = false;
   }
 
   override updated(): void {
@@ -120,12 +135,40 @@ export class DsSelect extends LitElement {
       return;
     }
 
+    const validity = this.#validity();
     this.#internals.setFormValue(this.value);
+    this.#internals.setValidity(validity.flags, validity.message, field ?? undefined);
+  }
+
+  #validity() {
+    return fieldValidity({
+      value: this.value,
+      required: this.required,
+      email: false,
+      minLength: 0,
+      error: this.error,
+    });
+  }
+
+  #visibleMessage(): string {
     if (this.error !== '') {
-      this.#internals.setValidity({ customError: true }, this.error, field ?? undefined);
-      return;
+      return this.error;
     }
-    this.#internals.setValidity({});
+    if (!(this.#touched || this.#revealed)) {
+      return '';
+    }
+    return this.#validity().message;
+  }
+
+  #onInvalid = (event: Event): void => {
+    event.preventDefault();
+    this.#revealed = true;
+    void this.requestUpdate();
+  };
+
+  #onBlur(): void {
+    this.#touched = true;
+    void this.requestUpdate();
   }
 
   #onChange(event: Event): void {
@@ -136,7 +179,8 @@ export class DsSelect extends LitElement {
   }
 
   override render() {
-    const invalid = this.error !== '';
+    const message = this.#visibleMessage();
+    const invalid = message !== '';
     return html`
       ${this.label
         ? html`<label for=${this.#selectId}>${this.label}</label>`
@@ -151,6 +195,7 @@ export class DsSelect extends LitElement {
         aria-invalid=${invalid ? 'true' : 'false'}
         aria-describedby=${invalid ? this.#errorId : nothing}
         @change=${this.#onChange}
+        @focusout=${this.#onBlur}
       >
         ${this.placeholder
           ? html`<option value="">${this.placeholder}</option>`
@@ -160,7 +205,7 @@ export class DsSelect extends LitElement {
         )}
       </select>
       ${invalid
-        ? html`<p class="error" id=${this.#errorId} part="error">${this.error}</p>`
+        ? html`<p class="error" id=${this.#errorId} part="error">${message}</p>`
         : nothing}
     `;
   }

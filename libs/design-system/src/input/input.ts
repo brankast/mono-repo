@@ -1,5 +1,6 @@
 import { LitElement, css, html, nothing } from 'lit';
 import { live } from 'lit/directives/live.js';
+import { fieldValidity } from '../validation.js';
 
 export type InputType = 'text' | 'email' | 'password';
 
@@ -17,6 +18,7 @@ export class DsInput extends LitElement {
     placeholder: { type: String },
     value: { type: String },
     error: { type: String },
+    minlength: { type: Number, reflect: true },
     required: { type: Boolean, reflect: true },
     disabled: { type: Boolean, reflect: true },
   };
@@ -27,6 +29,7 @@ export class DsInput extends LitElement {
   declare placeholder: string;
   declare value: string;
   declare error: string;
+  declare minlength: number;
   declare required: boolean;
   declare disabled: boolean;
 
@@ -78,6 +81,8 @@ export class DsInput extends LitElement {
   #internals: ElementInternals;
   #inputId: string;
   #errorId: string;
+  #touched = false;
+  #revealed = false;
 
   constructor() {
     super();
@@ -91,12 +96,25 @@ export class DsInput extends LitElement {
     this.placeholder = '';
     this.value = '';
     this.error = '';
+    this.minlength = 0;
     this.required = false;
     this.disabled = false;
   }
 
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener('invalid', this.#onInvalid);
+  }
+
+  override disconnectedCallback(): void {
+    this.removeEventListener('invalid', this.#onInvalid);
+    super.disconnectedCallback();
+  }
+
   formResetCallback(): void {
     this.value = '';
+    this.#touched = false;
+    this.#revealed = false;
   }
 
   override updated(): void {
@@ -124,12 +142,40 @@ export class DsInput extends LitElement {
       return;
     }
 
+    const validity = this.#validity();
     this.#internals.setFormValue(this.value);
+    this.#internals.setValidity(validity.flags, validity.message, field ?? undefined);
+  }
+
+  #validity() {
+    return fieldValidity({
+      value: this.value,
+      required: this.required,
+      email: this.type === 'email',
+      minLength: this.minlength,
+      error: this.error,
+    });
+  }
+
+  #visibleMessage(): string {
     if (this.error !== '') {
-      this.#internals.setValidity({ customError: true }, this.error, field ?? undefined);
-      return;
+      return this.error;
     }
-    this.#internals.setValidity({});
+    if (!(this.#touched || this.#revealed)) {
+      return '';
+    }
+    return this.#validity().message;
+  }
+
+  #onInvalid = (event: Event): void => {
+    event.preventDefault();
+    this.#revealed = true;
+    void this.requestUpdate();
+  };
+
+  #onBlur(): void {
+    this.#touched = true;
+    void this.requestUpdate();
   }
 
   #onInput(event: Event): void {
@@ -140,7 +186,8 @@ export class DsInput extends LitElement {
   }
 
   override render() {
-    const invalid = this.error !== '';
+    const message = this.#visibleMessage();
+    const invalid = message !== '';
     return html`
       ${this.label
         ? html`<label for=${this.#inputId}>${this.label}</label>`
@@ -157,9 +204,10 @@ export class DsInput extends LitElement {
         aria-invalid=${invalid ? 'true' : 'false'}
         aria-describedby=${invalid ? this.#errorId : nothing}
         @input=${this.#onInput}
+        @focusout=${this.#onBlur}
       />
       ${invalid
-        ? html`<p class="error" id=${this.#errorId} part="error">${this.error}</p>`
+        ? html`<p class="error" id=${this.#errorId} part="error">${message}</p>`
         : nothing}
     `;
   }

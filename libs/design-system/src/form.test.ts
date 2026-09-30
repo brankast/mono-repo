@@ -43,4 +43,28 @@ describe('design system form', () => {
     expect(email.getAttribute('data-form-value')).toBe('ada@example.com');
     expect(status.getAttribute('data-form-value')).toBe('active');
   });
+
+  it('blocks submit and reveals a required message', async () => {
+    const form = document.createElement('form');
+    const email = document.createElement('ds-input') as DsInput;
+    email.name = 'email';
+    email.type = 'email';
+    email.required = true;
+    const save = document.createElement('ds-button') as DsButton;
+    save.type = 'submit';
+    save.textContent = 'Save';
+    form.append(email, save);
+    document.body.append(form);
+    await Promise.all([email.updateComplete, save.updateComplete]);
+
+    let submitted = 0;
+    form.addEventListener('submit', () => {
+      submitted += 1;
+    });
+    save.shadowRoot?.querySelector('button')?.click();
+    await email.updateComplete;
+
+    expect(submitted).toBe(0);
+    expect(email.shadowRoot?.querySelector('p')?.textContent).toBe('This field is required.');
+  });
 });
