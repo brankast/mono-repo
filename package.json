@@ -11,6 +11,7 @@
     "graph": "nx graph"
   },
   "devDependencies": {
-    "nx": "23.2.1"
+    "nx": "23.2.1",
+    "typescript": "7.0.2"
   }
 }
