@@ -1,0 +1,23 @@
+:root {
+  --ds-font: system-ui, sans-serif;
+  --ds-radius: 6px;
+  --ds-control-height: 2.5rem;
+
+  --ds-space-1: 0.25rem;
+  --ds-space-2: 0.5rem;
+  --ds-space-3: 0.75rem;
+  --ds-space-4: 1rem;
+  --ds-space-5: 1.5rem;
+  --ds-space-6: 2rem;
+
+  --ds-color-bg: #ffffff;
+  --ds-color-surface: #f4f4f5;
+  --ds-color-text: #18181b;
+  --ds-color-muted: #71717a;
+  --ds-color-border: #d4d4d8;
+  --ds-color-primary: #2563eb;
+  --ds-color-on-primary: #ffffff;
+  --ds-color-danger: #dc2626;
+  --ds-color-on-danger: #ffffff;
+  --ds-color-focus: #2563eb;
+}

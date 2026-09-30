@@ -8,9 +8,18 @@
       "@mono/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./tokens.css": "./src/tokens.css"
   },
   "scripts": {
-    "build": "tsc -b tsconfig.json --pretty false"
+    "build": "tsc -b tsconfig.json --pretty false",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "lit": "3.3.3"
+  },
+  "devDependencies": {
+    "happy-dom": "20.14.5",
+    "vitest": "5.0.2"
   }
 }
