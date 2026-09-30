@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Design system form</title>
+    <style>
+      body {
+        margin: 0;
+        background: var(--ds-color-bg);
+        color: var(--ds-color-text);
+        font-family: var(--ds-font);
+      }
+
+      form {
+        display: grid;
+        gap: var(--ds-space-4);
+        max-width: 24rem;
+        margin: var(--ds-space-6);
+      }
+
+      #result {
+        margin: 0;
+        white-space: pre-line;
+        color: var(--ds-color-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <form id="sample">
+      <ds-input
+        label="Email"
+        name="email"
+        type="email"
+        placeholder="you@example.com"
+        required
+      ></ds-input>
+      <ds-select label="Status" name="status" placeholder="Choose" required></ds-select>
+      <ds-button type="submit">Save</ds-button>
+      <p id="result">Submit the form to see its values.</p>
+    </form>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
