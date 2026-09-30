@@ -92,4 +92,44 @@ describe('ds-input', () => {
     expect(input.value).toBe('');
     expect(fieldOf(input).value).toBe('');
   });
+
+  it('hides built-in validation until blur, then clears it when the value is valid', async () => {
+    const input = createInput();
+    input.type = 'email';
+    input.required = true;
+    input.minlength = 3;
+    await input.updateComplete;
+
+    expect(input.shadowRoot?.querySelector('p')).toBeNull();
+
+    fieldOf(input).dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    await input.updateComplete;
+    expect(input.shadowRoot?.querySelector('p')?.textContent).toBe('This field is required.');
+
+    input.value = 'not-an-email';
+    await input.updateComplete;
+    expect(input.shadowRoot?.querySelector('p')?.textContent).toBe(
+      'Enter a valid email address.',
+    );
+
+    input.type = 'password';
+    input.value = 'no';
+    await input.updateComplete;
+    expect(input.shadowRoot?.querySelector('p')?.textContent).toBe('Use at least 3 characters.');
+
+    input.value = 'ada@example.com';
+    input.type = 'email';
+    await input.updateComplete;
+    expect(input.shadowRoot?.querySelector('p')).toBeNull();
+  });
+
+  it('shows an external error immediately', async () => {
+    const input = createInput();
+    input.error = 'Those passwords do not match.';
+    await input.updateComplete;
+
+    expect(input.shadowRoot?.querySelector('p')?.textContent).toBe(
+      'Those passwords do not match.',
+    );
+  });
 });

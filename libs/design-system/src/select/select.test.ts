@@ -103,4 +103,18 @@ describe('ds-select', () => {
     expect(select.value).toBe('');
     expect(fieldOf(select).value).toBe('');
   });
+
+  it('shows a required message after blur and hides it before then', async () => {
+    const select = createSelect();
+    select.required = true;
+    select.placeholder = 'Choose';
+    select.options = options;
+    await select.updateComplete;
+
+    expect(select.shadowRoot?.querySelector('p')).toBeNull();
+
+    fieldOf(select).dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    await select.updateComplete;
+    expect(select.shadowRoot?.querySelector('p')?.textContent).toBe('This field is required.');
+  });
 });
