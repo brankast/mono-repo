@@ -1,0 +1,16 @@
+{
+  "name": "mono-repo",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@12.8.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "nx": "nx",
+    "graph": "nx graph"
+  },
+  "devDependencies": {
+    "nx": "23.2.1"
+  }
+}
