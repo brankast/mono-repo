@@ -13,13 +13,15 @@
   },
   "scripts": {
     "build": "tsc -b tsconfig.json --pretty false",
-    "test": "vitest run"
+    "test": "vitest run",
+    "demo": "vite --host 127.0.0.1 --port 4310"
   },
   "dependencies": {
     "lit": "3.3.3"
   },
   "devDependencies": {
     "happy-dom": "20.14.5",
+    "vite": "8.3.1",
     "vitest": "5.0.2"
   }
 }

@@ -10,4 +10,5 @@ Projects:
 ```sh
 pnpm install
 pnpm nx show projects
+pnpm --filter @mono/design-system demo
 ```

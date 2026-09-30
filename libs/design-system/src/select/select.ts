@@ -153,7 +153,7 @@ export class DsSelect extends LitElement {
         @change=${this.#onChange}
       >
         ${this.placeholder
-          ? html`<option value="" disabled>${this.placeholder}</option>`
+          ? html`<option value="">${this.placeholder}</option>`
           : nothing}
         ${this.options.map(
           (option) => html`<option value=${option.value}>${option.label}</option>`,

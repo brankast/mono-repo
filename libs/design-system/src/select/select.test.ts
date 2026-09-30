@@ -41,6 +41,7 @@ describe('ds-select', () => {
     }));
 
     expect(select.value).toBe('');
+    expect(field.value).toBe('');
     expect(label?.textContent).toBe('Status');
     expect(label?.htmlFor).toBe(field.id);
     expect(rendered).toEqual([
