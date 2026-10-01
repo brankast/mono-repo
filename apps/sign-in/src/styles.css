@@ -1,0 +1,57 @@
+@import '@mono/design-system/tokens.css';
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--ds-font);
+  background: var(--ds-color-surface);
+  color: var(--ds-color-text);
+}
+
+.page {
+  max-width: 24rem;
+  margin: var(--ds-space-6) auto;
+  padding: var(--ds-space-5);
+  background: var(--ds-color-bg);
+  border: 1px solid var(--ds-color-border);
+  border-radius: var(--ds-radius);
+}
+
+nav {
+  display: flex;
+  gap: var(--ds-space-4);
+  margin-bottom: var(--ds-space-5);
+}
+
+a {
+  color: var(--ds-color-primary);
+}
+
+a.active {
+  color: var(--ds-color-text);
+  text-decoration: none;
+}
+
+h1 {
+  margin: 0 0 var(--ds-space-4);
+  font-size: 1.5rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-4);
+}
+
+form ds-button::part(button) {
+  width: 100%;
+}
+
+.form-error {
+  margin: 0;
+  color: var(--ds-color-danger);
+}
+
+.switch {
+  margin: var(--ds-space-4) 0 0;
+}

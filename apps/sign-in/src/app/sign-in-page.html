@@ -1,0 +1,25 @@
+<h1>Sign in</h1>
+<form [formGroup]="form" (ngSubmit)="submit($event)">
+  <ds-input
+    formControlName="email"
+    label="Email"
+    type="email"
+    name="email"
+    autocomplete="email"
+    required
+  ></ds-input>
+  <ds-input
+    formControlName="password"
+    label="Password"
+    type="password"
+    name="password"
+    autocomplete="current-password"
+    [attr.minlength]="passwordMinLength"
+    required
+  ></ds-input>
+  @if (formError) {
+    <p class="form-error" role="alert">{{ formError }}</p>
+  }
+  <ds-button type="submit" [attr.loading]="submitting ? '' : null">Sign in</ds-button>
+</form>
+<p class="switch"><a routerLink="/register">Create an account</a></p>

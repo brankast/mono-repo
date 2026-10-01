@@ -88,6 +88,9 @@ export class DsButton extends LitElement {
       return;
     }
     if (this.type === 'submit') {
+      if (!form.checkValidity()) {
+        return;
+      }
       form.requestSubmit();
     }
     if (this.type === 'reset') {
