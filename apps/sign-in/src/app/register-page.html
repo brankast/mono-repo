@@ -1,2 +1,33 @@
 <h1>Create an account</h1>
-<p>Register with your email.</p>
+<form [formGroup]="form" (ngSubmit)="submit($event)">
+  <ds-input
+    formControlName="email"
+    label="Email"
+    type="email"
+    name="email"
+    autocomplete="email"
+    required
+  ></ds-input>
+  <ds-input
+    formControlName="password"
+    label="Password"
+    type="password"
+    name="password"
+    autocomplete="new-password"
+    [attr.minlength]="passwordMinLength"
+    required
+  ></ds-input>
+  <ds-input
+    formControlName="confirmPassword"
+    label="Confirm password"
+    type="password"
+    name="confirmPassword"
+    autocomplete="new-password"
+    #confirmPassword
+    [attr.minlength]="passwordMinLength"
+    required
+    (focusout)="onConfirmBlur()"
+  ></ds-input>
+  <ds-button type="submit">Create account</ds-button>
+</form>
+<p class="switch"><a routerLink="/">Sign in</a></p>

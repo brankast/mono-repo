@@ -17,7 +17,8 @@
             "index": "src/index.html",
             "tsConfig": "tsconfig.app.json",
             "baseHref": "/sign-in/",
-            "styles": ["src/styles.css"]
+            "styles": ["src/styles.css"],
+            "conditions": ["@mono/source"]
           },
           "configurations": {
             "production": {
@@ -31,13 +32,23 @@
           },
           "defaultConfiguration": "production"
         },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "setupFiles": ["src/test-setup.ts"],
+            "watch": false
+          }
+        },
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
             "buildTarget": "sign-in:build:development",
             "host": "127.0.0.1",
             "port": 4200,
-            "servePath": "/sign-in/"
+            "servePath": "/sign-in/",
+            "prebundle": {
+              "exclude": ["@mono/angular-ds", "@mono/design-system", "@mono/contracts"]
+            }
           }
         }
       }
