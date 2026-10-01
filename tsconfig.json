@@ -4,6 +4,7 @@
   "references": [
     { "path": "./libs/contracts" },
     { "path": "./libs/design-system" },
-    { "path": "./libs/angular-ds/tsconfig.lib.json" }
+    { "path": "./libs/angular-ds/tsconfig.lib.json" },
+    { "path": "./apps/api" }
   ]
 }
