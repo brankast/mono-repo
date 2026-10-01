@@ -19,7 +19,7 @@ export class AuthClient {
   }
 
   continueToTodo(): void {
-    globalThis.location.assign('/todo');
+    globalThis.location.assign('/todo/');
   }
 }
 
