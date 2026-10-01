@@ -8,12 +8,14 @@ Projects:
 - `@mono/design-system` (`libs/design-system`) — tokens, `ds-button`, `ds-input`, and `ds-select`. Import `@mono/design-system/tokens.css` once per app.
 - `@mono/angular-ds` (`libs/angular-ds`) — Angular directives so those elements work in a reactive form. Import `DsInputControl`, `DsSelectControl`, and `DsButtonControl`.
 - `@mono/api` (`apps/api`) — auth and todos. Session is an httpOnly cookie named `session`.
+- `@mono/sign-in` (`apps/sign-in`) — sign-in and register screens. Open `http://127.0.0.1:4200/sign-in/`.
 
 ```sh
 pnpm install
 pnpm nx show projects
 pnpm --filter @mono/design-system demo
 pnpm --filter @mono/api test
+pnpm --filter @mono/sign-in start
 ```
 
 Copy `apps/api/.env.example` to `apps/api/.env`, set `AUTH_SECRET` to at least 32 characters, then run `pnpm --filter @mono/api dev`. The API listens on port 3000.
