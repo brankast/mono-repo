@@ -34,11 +34,82 @@ a.active {
 }
 
 h1 {
-  margin: 0 0 var(--ds-space-3);
+  margin: 0 0 var(--ds-space-4);
   font-size: 1.5rem;
 }
 
 p {
   margin: 0;
   color: var(--ds-color-muted);
+}
+
+.sign-out {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--ds-color-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.sign-out:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+form,
+.todos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-4);
+}
+
+form {
+  margin-bottom: var(--ds-space-5);
+}
+
+form ds-button::part(button) {
+  width: 100%;
+}
+
+ds-select {
+  display: block;
+  margin-bottom: var(--ds-space-4);
+}
+
+.form-error {
+  color: var(--ds-color-danger);
+}
+
+.empty {
+  margin-top: var(--ds-space-4);
+}
+
+.todos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.todo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-3);
+}
+
+.todo-title {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+  min-width: 0;
+}
+
+.todo-title span {
+  overflow-wrap: anywhere;
+}
+
+.done {
+  color: var(--ds-color-muted);
+  text-decoration: line-through;
 }

@@ -1,7 +1,10 @@
 <main class="page">
   <nav aria-label="Todos">
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Todos</a>
-    <a href="/sign-in/">Sign out</a>
+    <button type="button" class="sign-out" (click)="signOut()" [disabled]="signingOut">Sign out</button>
   </nav>
+  @if (signOutError) {
+    <p class="form-error" role="alert">{{ signOutError }}</p>
+  }
   <router-outlet />
 </main>

@@ -1,2 +1,37 @@
-<h1>Todos</h1>
-<p>Your list will show up here.</p>
+@if (loadError) {
+  <p class="form-error" role="alert">{{ loadError }}</p>
+} @else if (!ready) {
+  <p>Loading…</p>
+} @else {
+  <h1>Todos</h1>
+  <form [formGroup]="form" (ngSubmit)="add($event)">
+    <ds-input
+      #title
+      formControlName="title"
+      label="New todo"
+      type="text"
+      name="title"
+      required
+    ></ds-input>
+    @if (formError) {
+      <p class="form-error" role="alert">{{ formError }}</p>
+    }
+    <ds-button type="submit" [attr.loading]="adding ? '' : null">Add</ds-button>
+  </form>
+  <ds-select label="Show" name="filter" [options]="filterOptions" [formControl]="filter"></ds-select>
+  @if (visible().length === 0) {
+    <p class="empty">{{ items.length === 0 ? 'No todos yet.' : 'No matching todos.' }}</p>
+  } @else {
+    <ul class="todos">
+      @for (todo of visible(); track todo.id) {
+        <li class="todo">
+          <label class="todo-title">
+            <input type="checkbox" [checked]="todo.completed" (change)="toggle(todo)" />
+            <span [class.done]="todo.completed">{{ todo.title }}</span>
+          </label>
+          <ds-button type="button" variant="danger" (click)="remove(todo)">Delete</ds-button>
+        </li>
+      }
+    </ul>
+  }
+}

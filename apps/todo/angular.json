@@ -32,6 +32,13 @@
           },
           "defaultConfiguration": "production"
         },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "setupFiles": ["src/test-setup.ts"],
+            "watch": false
+          }
+        },
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
