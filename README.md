@@ -8,7 +8,7 @@ Projects:
 - `@mono/design-system` (`libs/design-system`) — tokens, `ds-button`, `ds-input`, and `ds-select`. Import `@mono/design-system/tokens.css` once per app.
 - `@mono/angular-ds` (`libs/angular-ds`) — Angular directives so those elements work in a reactive form. Import `DsInputControl`, `DsSelectControl`, and `DsButtonControl`.
 - `@mono/api` (`apps/api`) — auth and todos. Session is an httpOnly cookie named `session`.
-- `@mono/sign-in` (`apps/sign-in`) — sign-in and register forms. Open `http://127.0.0.1:4200/sign-in/`.
+- `@mono/sign-in` (`apps/sign-in`) — sign-in and register forms. Open `http://127.0.0.1:4200/sign-in/`. The dev server proxies `/api` to port 3000, and a successful register or sign-in goes to `/todo`.
 
 ```sh
 pnpm install

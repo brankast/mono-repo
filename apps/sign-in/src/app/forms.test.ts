@@ -1,10 +1,37 @@
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import type { LoginRequest, RegisterRequest } from '@mono/contracts';
 import type { DsButton, DsInput } from '@mono/design-system';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { AuthClient, AuthRequestError } from './auth-client';
 import { RegisterPage } from './register-page';
 import { SignInPage } from './sign-in-page';
+
+class FakeAuthClient {
+  loginBody: LoginRequest | null = null;
+  registerBody: RegisterRequest | null = null;
+  failure: string | null = null;
+  wentToTodo = false;
+
+  async login(body: LoginRequest): Promise<void> {
+    this.loginBody = body;
+    if (this.failure !== null) {
+      throw new AuthRequestError(this.failure);
+    }
+  }
+
+  async register(body: RegisterRequest): Promise<void> {
+    this.registerBody = body;
+    if (this.failure !== null) {
+      throw new AuthRequestError(this.failure);
+    }
+  }
+
+  continueToTodo(): void {
+    this.wentToTodo = true;
+  }
+}
 
 function field(root: ParentNode, label: string): DsInput {
   const fields = [...root.querySelectorAll('ds-input')] as DsInput[];
@@ -42,11 +69,13 @@ async function clickSubmit(root: ParentNode): Promise<void> {
 
 describe('sign-in page', () => {
   let fixture: ComponentFixture<SignInPage>;
+  let auth: FakeAuthClient;
 
   beforeEach(async () => {
+    auth = new FakeAuthClient();
     await TestBed.configureTestingModule({
       imports: [SignInPage],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), { provide: AuthClient, useValue: auth }],
     }).compileComponents();
     fixture = TestBed.createComponent(SignInPage);
     fixture.detectChanges();
@@ -64,7 +93,7 @@ describe('sign-in page', () => {
     await clickSubmit(fixture.nativeElement);
     await Promise.all([email.updateComplete, password.updateComplete]);
 
-    expect(fixture.componentInstance.submitted).toBeNull();
+    expect(auth.loginBody).toBeNull();
     expect(errorText(email)).toBe('This field is required.');
     expect(errorText(password)).toBe('This field is required.');
   });
@@ -78,33 +107,51 @@ describe('sign-in page', () => {
     await clickSubmit(fixture.nativeElement);
     await Promise.all([email.updateComplete, password.updateComplete]);
 
-    expect(fixture.componentInstance.submitted).toBeNull();
+    expect(auth.loginBody).toBeNull();
     expect(errorText(email)).toBe('Enter a valid email address.');
     expect(errorText(password)).toBe('Use at least 8 characters.');
   });
 
-  it('accepts a valid email and password', async () => {
+  it('signs in and continues to the todo app', async () => {
     const email = field(fixture.nativeElement, 'Email');
     const password = field(fixture.nativeElement, 'Password');
     await setValue(email, 'ada@example.com');
     await setValue(password, 'password1');
 
     await clickSubmit(fixture.nativeElement);
+    await fixture.whenStable();
 
-    expect(fixture.componentInstance.submitted).toEqual({
-      email: 'ada@example.com',
-      password: 'password1',
-    });
+    expect(auth.loginBody).toEqual({ email: 'ada@example.com', password: 'password1' });
+    expect(auth.wentToTodo).toBe(true);
+  });
+
+  it('shows the API message and stays on the page', async () => {
+    auth.failure = 'Email or password is incorrect.';
+    const email = field(fixture.nativeElement, 'Email');
+    const password = field(fixture.nativeElement, 'Password');
+    await setValue(email, 'ada@example.com');
+    await setValue(password, 'password1');
+
+    await clickSubmit(fixture.nativeElement);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(auth.wentToTodo).toBe(false);
+    expect(fixture.nativeElement.querySelector('.form-error')?.textContent).toBe(
+      'Email or password is incorrect.',
+    );
   });
 });
 
 describe('register page', () => {
   let fixture: ComponentFixture<RegisterPage>;
+  let auth: FakeAuthClient;
 
   beforeEach(async () => {
+    auth = new FakeAuthClient();
     await TestBed.configureTestingModule({
       imports: [RegisterPage],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), { provide: AuthClient, useValue: auth }],
     }).compileComponents();
     fixture = TestBed.createComponent(RegisterPage);
     fixture.detectChanges();
@@ -128,7 +175,7 @@ describe('register page', () => {
     expect(errorText(confirm)).toBe('Passwords do not match.');
 
     await clickSubmit(fixture.nativeElement);
-    expect(fixture.componentInstance.submitted).toBeNull();
+    expect(auth.registerBody).toBeNull();
   });
 
   it('accepts matching passwords', async () => {
@@ -147,10 +194,27 @@ describe('register page', () => {
     expect(errorText(confirm)).toBe('');
 
     await clickSubmit(fixture.nativeElement);
-    expect(fixture.componentInstance.submitted).toEqual({
-      email: 'ada@example.com',
-      password: 'password1',
-      confirmPassword: 'password1',
-    });
+    await fixture.whenStable();
+    expect(auth.registerBody).toEqual({ email: 'ada@example.com', password: 'password1' });
+    expect(auth.wentToTodo).toBe(true);
+  });
+
+  it('shows a duplicate account message from the API', async () => {
+    auth.failure = 'An account with this email already exists.';
+    const email = field(fixture.nativeElement, 'Email');
+    const password = field(fixture.nativeElement, 'Password');
+    const confirm = field(fixture.nativeElement, 'Confirm password');
+    await setValue(email, 'ada@example.com');
+    await setValue(password, 'password1');
+    await setValue(confirm, 'password1');
+
+    await clickSubmit(fixture.nativeElement);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(auth.wentToTodo).toBe(false);
+    expect(fixture.nativeElement.querySelector('.form-error')?.textContent).toBe(
+      'An account with this email already exists.',
+    );
   });
 });

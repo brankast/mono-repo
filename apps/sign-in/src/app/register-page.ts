@@ -1,9 +1,10 @@
-import { Component, ElementRef, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, inject, viewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DsButtonControl, DsInputControl } from '@mono/angular-ds';
 import type { DsInput } from '@mono/design-system';
 import { passwordMinLength } from '@mono/contracts';
+import { AuthClient, AuthRequestError } from './auth-client';
 
 @Component({
   selector: 'app-register-page',
@@ -18,13 +19,23 @@ export class RegisterPage {
     confirmPassword: new FormControl('', { nonNullable: true }),
   });
   confirmError = '';
-  submitted: { email: string; password: string; confirmPassword: string } | null = null;
+  formError = '';
+  submitting = false;
   private readonly confirmPasswordField = viewChild<ElementRef<DsInput>>('confirmPassword');
+  private readonly auth = inject(AuthClient);
+  private readonly changes = inject(ChangeDetectorRef);
   private confirmTouched = false;
 
   constructor() {
     this.form.controls.password.valueChanges.subscribe(() => this.syncConfirmError());
     this.form.controls.confirmPassword.valueChanges.subscribe(() => this.syncConfirmError());
+    this.form.valueChanges.subscribe(() => {
+      if (this.formError === '') {
+        return;
+      }
+      this.formError = '';
+      this.changes.detectChanges();
+    });
   }
 
   onConfirmBlur(): void {
@@ -32,14 +43,29 @@ export class RegisterPage {
     this.syncConfirmError();
   }
 
-  submit(event: Event): void {
+  async submit(event: Event): Promise<void> {
     this.confirmTouched = true;
     this.syncConfirmError();
     const form = event.target;
-    if (this.confirmError !== '' || !(form instanceof HTMLFormElement) || !form.checkValidity()) {
+    if (
+      this.confirmError !== '' ||
+      !(form instanceof HTMLFormElement) ||
+      !form.checkValidity() ||
+      this.submitting
+    ) {
       return;
     }
-    this.submitted = this.form.getRawValue();
+    this.formError = '';
+    this.submitting = true;
+    try {
+      const { email, password } = this.form.getRawValue();
+      await this.auth.register({ email, password });
+      this.auth.continueToTodo();
+    } catch (error) {
+      this.formError = error instanceof AuthRequestError ? error.message : 'Something went wrong.';
+      this.submitting = false;
+      this.changes.detectChanges();
+    }
   }
 
   private syncConfirmError(): void {

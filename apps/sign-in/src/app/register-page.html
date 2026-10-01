@@ -28,6 +28,9 @@
     required
     (focusout)="onConfirmBlur()"
   ></ds-input>
-  <ds-button type="submit">Create account</ds-button>
+  @if (formError) {
+    <p class="form-error" role="alert">{{ formError }}</p>
+  }
+  <ds-button type="submit" [attr.loading]="submitting ? '' : null">Create account</ds-button>
 </form>
 <p class="switch"><a routerLink="/">Sign in</a></p>

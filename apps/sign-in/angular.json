@@ -46,6 +46,7 @@
             "host": "127.0.0.1",
             "port": 4200,
             "servePath": "/sign-in/",
+            "proxyConfig": "proxy.conf.json",
             "prebundle": {
               "exclude": ["@mono/angular-ds", "@mono/design-system", "@mono/contracts"]
             }

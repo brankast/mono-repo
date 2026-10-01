@@ -17,6 +17,9 @@
     [attr.minlength]="passwordMinLength"
     required
   ></ds-input>
-  <ds-button type="submit">Sign in</ds-button>
+  @if (formError) {
+    <p class="form-error" role="alert">{{ formError }}</p>
+  }
+  <ds-button type="submit" [attr.loading]="submitting ? '' : null">Sign in</ds-button>
 </form>
 <p class="switch"><a routerLink="/register">Create an account</a></p>
