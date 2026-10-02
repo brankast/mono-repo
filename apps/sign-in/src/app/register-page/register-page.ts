@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { DsButtonControl, DsInputControl } from '@mono/angular-ds';
 import type { DsInput } from '@mono/design-system';
 import { passwordMinLength } from '@mono/contracts';
-import { AuthClient, AuthRequestError } from './auth-client';
+import { AuthClient, AuthRequestError } from '../auth-client';
 
 @Component({
   selector: 'app-register-page',

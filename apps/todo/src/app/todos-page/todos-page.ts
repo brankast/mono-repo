@@ -3,7 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DsButtonControl, DsInputControl, DsSelectControl } from '@mono/angular-ds';
 import type { Todo } from '@mono/contracts';
 import type { DsInput, SelectOption } from '@mono/design-system';
-import { TodoClient, TodoRequestError } from './todo-client';
+import { TodoClient, TodoRequestError } from '../todo-client';
 
 type TodoFilter = 'all' | 'active' | 'completed';
 

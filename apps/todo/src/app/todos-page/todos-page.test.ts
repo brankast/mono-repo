@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import type { Todo } from '@mono/contracts';
 import type { DsButton, DsInput } from '@mono/design-system';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { TodoClient, TodoRequestError } from './todo-client';
+import { TodoClient, TodoRequestError } from '../todo-client';
 import { TodosPage } from './todos-page';
 
 const milk: Todo = {

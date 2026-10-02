@@ -1,28 +1,19 @@
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import type { LoginRequest, RegisterRequest } from '@mono/contracts';
+import type { LoginRequest } from '@mono/contracts';
 import type { DsButton, DsInput } from '@mono/design-system';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { AuthClient, AuthRequestError } from './auth-client';
-import { RegisterPage } from './register-page';
+import { AuthClient, AuthRequestError } from '../auth-client';
 import { SignInPage } from './sign-in-page';
 
 class FakeAuthClient {
   loginBody: LoginRequest | null = null;
-  registerBody: RegisterRequest | null = null;
   failure: string | null = null;
   wentToTodo = false;
 
   async login(body: LoginRequest): Promise<void> {
     this.loginBody = body;
-    if (this.failure !== null) {
-      throw new AuthRequestError(this.failure);
-    }
-  }
-
-  async register(body: RegisterRequest): Promise<void> {
-    this.registerBody = body;
     if (this.failure !== null) {
       throw new AuthRequestError(this.failure);
     }
@@ -139,82 +130,6 @@ describe('sign-in page', () => {
     expect(auth.wentToTodo).toBe(false);
     expect(fixture.nativeElement.querySelector('.form-error')?.textContent).toBe(
       'Email or password is incorrect.',
-    );
-  });
-});
-
-describe('register page', () => {
-  let fixture: ComponentFixture<RegisterPage>;
-  let auth: FakeAuthClient;
-
-  beforeEach(async () => {
-    auth = new FakeAuthClient();
-    await TestBed.configureTestingModule({
-      imports: [RegisterPage],
-      providers: [provideRouter([]), { provide: AuthClient, useValue: auth }],
-    }).compileComponents();
-    fixture = TestBed.createComponent(RegisterPage);
-    fixture.detectChanges();
-  });
-
-  afterEach(() => {
-    TestBed.resetTestingModule();
-  });
-
-  it('shows a mismatch after confirm password is left and blocks submit', async () => {
-    const email = field(fixture.nativeElement, 'Email');
-    const password = field(fixture.nativeElement, 'Password');
-    const confirm = field(fixture.nativeElement, 'Confirm password');
-    await setValue(email, 'ada@example.com');
-    await setValue(password, 'password1');
-    await setValue(confirm, 'password2');
-    confirm.dispatchEvent(new FocusEvent('focusout', { bubbles: true, composed: true }));
-    fixture.detectChanges();
-    await confirm.updateComplete;
-
-    expect(errorText(confirm)).toBe('Passwords do not match.');
-
-    await clickSubmit(fixture.nativeElement);
-    expect(auth.registerBody).toBeNull();
-  });
-
-  it('accepts matching passwords', async () => {
-    const email = field(fixture.nativeElement, 'Email');
-    const password = field(fixture.nativeElement, 'Password');
-    const confirm = field(fixture.nativeElement, 'Confirm password');
-    await setValue(email, 'ada@example.com');
-    await setValue(password, 'password1');
-    await setValue(confirm, 'password2');
-    confirm.dispatchEvent(new FocusEvent('focusout', { bubbles: true, composed: true }));
-    fixture.detectChanges();
-    await setValue(confirm, 'password1');
-    fixture.detectChanges();
-    await confirm.updateComplete;
-
-    expect(errorText(confirm)).toBe('');
-
-    await clickSubmit(fixture.nativeElement);
-    await fixture.whenStable();
-    expect(auth.registerBody).toEqual({ email: 'ada@example.com', password: 'password1' });
-    expect(auth.wentToTodo).toBe(true);
-  });
-
-  it('shows a duplicate account message from the API', async () => {
-    auth.failure = 'An account with this email already exists.';
-    const email = field(fixture.nativeElement, 'Email');
-    const password = field(fixture.nativeElement, 'Password');
-    const confirm = field(fixture.nativeElement, 'Confirm password');
-    await setValue(email, 'ada@example.com');
-    await setValue(password, 'password1');
-    await setValue(confirm, 'password1');
-
-    await clickSubmit(fixture.nativeElement);
-    await fixture.whenStable();
-    fixture.detectChanges();
-
-    expect(auth.wentToTodo).toBe(false);
-    expect(fixture.nativeElement.querySelector('.form-error')?.textContent).toBe(
-      'An account with this email already exists.',
     );
   });
 });
